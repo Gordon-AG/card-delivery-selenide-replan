@@ -1,57 +1,73 @@
 package ru.netology;
+
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
+
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.open;
+
 class CardDeliveryTest {
-    private static final String BASE_URL = "http://localhost:9999";
-    private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     @BeforeEach
     void setUp() {
-        open(BASE_URL);
+        open("http://localhost:9999");
     }
+
     @Test
-    void shouldSendCardDeliveryFormSuccessfully() {
-        // 1. Дата встречи: не ранее трёх дней с текущей даты.
-        String meetingDate = LocalDate.now().plusDays(3).format(DATE_FORMATTER);
-        // 2. Город — один из административных центров РФ.
-        // Прямой ввод без выбора из выпадающего списка.
-        $("[data-test-id='city'] input").setValue("Москва");
-        // 3. Поле даты предзаполнено. Метод clear() на таких формах не работает —
-        // повторяем действия пользователя: выделяем текст и удаляем его.
+    void shouldPlanAndReplanMeeting() {
+        // Данные генерируются через утилитный класс — никакого хардкода
+        RegistrationInfo info = DataGenerator.generateInfo(4);
+        String newDate = DataGenerator.generateDate(7);
+
+        // --- Шаг 1: первое планирование ---
+        $("[data-test-id='city'] input").setValue(info.getCity());
+
+        // Очистка предзаполненной даты (React-форма, clear() не работает)
         SelenideElement dateField = $("[data-test-id='date'] input");
-        dateField.doubleClick(); // выделяем всё содержимое поля
-        dateField.sendKeys(Keys.DELETE); // удаляем выделенный текст
-        dateField.setValue(meetingDate);
-        // 4. Фамилия и имя — только русские буквы, дефисы и пробелы.
-        $("[data-test-id='name'] input").setValue("Иванов Иван");
-        // 5. Телефон — 11 цифр, символ + на первом месте.
-        $("[data-test-id='phone'] input").setValue("+79991234567");
-        // 6. Флажок согласия должен быть выставлен.
+        dateField.doubleClick();
+        dateField.sendKeys(Keys.DELETE);
+        dateField.setValue(info.getDate());
+
+        $("[data-test-id='name'] input").setValue(info.getName());
+        $("[data-test-id='phone'] input").setValue(info.getPhone());
         $("[data-test-id='agreement']").click();
-        // 7. Отправляем форму.
-        $$("button").find(exactText("Забронировать")).click();
-        // 8. Состояние загрузки не должно длиться более 15 секунд.
-        // После успешной отправки формы появится всплывающее окно
-        // об успешном завершении бронирования.
-        $("[data-test-id='notification']")
+        $$("button").find(exactText("Запланировать")).click();
+
+        // Проверка первого успеха
+        $("[data-test-id='success-notification']")
                 .shouldBe(visible, Duration.ofSeconds(15));
-        // 9. Проверяем заголовок и текст уведомления.
-        $("[data-test-id='notification'] .notification__title")
+        $("[data-test-id='success-notification'] .notification__title")
                 .shouldHave(exactText("Успешно!"));
-        $("[data-test-id='notification'] .notification__content")
-                .shouldHave(Condition.text(meetingDate));
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(Condition.text(info.getDate()));
+
+        // --- Шаг 2: перепланирование — меняем только дату ---
+        dateField.doubleClick();
+        dateField.sendKeys(Keys.DELETE);
+        dateField.setValue(newDate);
+        $$("button").find(exactText("Запланировать")).click();
+
+        // Появляется replan-notification
+        $("[data-test-id='replan-notification']")
+                .shouldBe(visible, Duration.ofSeconds(15));
+        $("[data-test-id='replan-notification'] .notification__title")
+                .shouldHave(exactText("Необходимо подтверждение"));
+
+        // Нажимаем «Перепланировать» (внутри replan-notification)
+        $("[data-test-id='replan-notification'] button")
+                .shouldHave(exactText("Перепланировать"))
+                .click();
+
+        // success-notification обновился новой датой
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(Condition.text(newDate), Duration.ofSeconds(15));
     }
 }

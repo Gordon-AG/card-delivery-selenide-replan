@@ -1,18 +1,14 @@
-# Card Delivery — Selenide Tests
-Автотесты формы заказа доставки карты для домашнего задания 2.2 (Selenide).
+# Card Delivery Replan — Selenide Tests (ДЗ 2.3. Patterns)
+Автотесты формы заказа доставки карты с проверкой перепланирования встречи.
 ## Технологии
-- Java 11
-- Gradle (wrapper)
-- JUnit Jupiter 5.10.2
-- Selenide 6.19.1
-## Локальный запуск
-1. Запустить SUT:
-```bash
-java -jar artifacts/app-card-delivery.jar &
-```
-2. Запустить тесты:
-```bash
-./gradlew test -Dselenide.headless=true
-```
+ - Selenide 6.19.1
+ - JUnit Jupiter 5.10.2
+ - Lombok 1.18.30
+ - Faker 1.0.2 (ru locale)
+## Сценарий
+1. Заполнение формы через DataGenerator (без хардкода).
+2. Проверка успешного планирования.
+3. Повторная отправка с новой датой → replan-notification.
+4. Нажатие «Перепланировать» → успех с новой датой.
 ## CI
-[![Java CI with Gradle](https://github.com/Gordon-AG/card-delivery-selenide/actions/workflows/gradle.yml/badge.svg)](https://github.com/Gordon-AG/card-delivery-selenide/actions/workflows/gradle.yml)
+[![Java CI with Gradle](https://github.com/Gordon-AG/card-delivery-selenide-replan/actions/workflows/gradle.yml/badge.svg)](https://github.com/Gordon-AG/card-delivery-selenide-replan/actions/workflows/gradle.yml)

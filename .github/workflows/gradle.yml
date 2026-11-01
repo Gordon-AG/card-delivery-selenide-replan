@@ -26,8 +26,8 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Start SUT (card-delivery app) in background
-        run: java -jar ./artifacts/app-card-delivery.jar &
+      - name: Start SUT (replan delivery app) in background
+        run: java -jar ./artifacts/app-replan-delivery.jar &
 
       - name: Wait for SUT to start
         run: sleep 5
