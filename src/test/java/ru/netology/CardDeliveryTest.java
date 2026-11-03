@@ -10,9 +10,7 @@ import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 
 class CardDeliveryTest {
 
@@ -23,14 +21,13 @@ class CardDeliveryTest {
 
     @Test
     void shouldPlanAndReplanMeeting() {
-        // Данные генерируются через утилитный класс — никакого хардкода
         RegistrationInfo info = DataGenerator.generateInfo(4);
         String newDate = DataGenerator.generateDate(7);
 
-        // --- Шаг 1: первое планирование ---
+        // Шаг 1: первое планирование
         $("[data-test-id='city'] input").setValue(info.getCity());
 
-        // Очистка предзаполненной даты (React-форма, clear() не работает)
+        // Очистка предзаполненной даты
         SelenideElement dateField = $("[data-test-id='date'] input");
         dateField.doubleClick();
         dateField.sendKeys(Keys.DELETE);
@@ -49,7 +46,7 @@ class CardDeliveryTest {
         $("[data-test-id='success-notification'] .notification__content")
                 .shouldHave(Condition.text(info.getDate()));
 
-        // --- Шаг 2: перепланирование — меняем только дату ---
+        // Шаг 2: перепланирование — меняем только дату
         dateField.doubleClick();
         dateField.sendKeys(Keys.DELETE);
         dateField.setValue(newDate);
@@ -61,7 +58,7 @@ class CardDeliveryTest {
         $("[data-test-id='replan-notification'] .notification__title")
                 .shouldHave(exactText("Необходимо подтверждение"));
 
-        // Нажимаем «Перепланировать» (внутри replan-notification)
+        // Нажимаем «Перепланировать»
         $("[data-test-id='replan-notification'] button")
                 .shouldHave(exactText("Перепланировать"))
                 .click();

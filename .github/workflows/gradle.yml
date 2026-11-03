@@ -20,9 +20,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
-
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
@@ -34,11 +31,3 @@ jobs:
 
       - name: Run tests with Selenide in headless mode
         run: ./gradlew test --info -Dselenide.headless=true
-
-      - name: Upload test report on failure
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: build/reports/tests
-          if-no-files-found: ignore
