@@ -38,13 +38,13 @@ class CardDeliveryTest {
         $("[data-test-id='agreement']").click();
         $$("button").find(exactText("Запланировать")).click();
 
-        // Проверка первого успеха
+        // Проверка первого успеха (проверяем полное сообщение с датой)
         $("[data-test-id='success-notification']")
                 .shouldBe(visible, Duration.ofSeconds(15));
         $("[data-test-id='success-notification'] .notification__title")
                 .shouldHave(exactText("Успешно!"));
         $("[data-test-id='success-notification'] .notification__content")
-                .shouldHave(Condition.text(info.getDate()));
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + info.getDate()));
 
         // Шаг 2: перепланирование — меняем только дату
         dateField.doubleClick();
@@ -63,8 +63,8 @@ class CardDeliveryTest {
                 .shouldHave(exactText("Перепланировать"))
                 .click();
 
-        // success-notification обновился новой датой
+        // success-notification обновился новым полным сообщением с новой датой
         $("[data-test-id='success-notification'] .notification__content")
-                .shouldHave(Condition.text(newDate), Duration.ofSeconds(15));
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + newDate), Duration.ofSeconds(15));
     }
 }
