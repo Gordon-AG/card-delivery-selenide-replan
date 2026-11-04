@@ -17,12 +17,15 @@
 4. Нажатие «Перепланировать» → успех с новой датой.
 
 ## Локальный запуск
+
 1. Запустить SUT:
 
 ```bash
 java -jar artifacts/app-replan-delivery.jar &
 ```
+
 Запуск в PowerShell:
+
 ```bash
 java -jar artifacts/app-replan-delivery.jar
 ```
@@ -32,10 +35,13 @@ java -jar artifacts/app-replan-delivery.jar
 ```bash
 ./gradlew test -Dselenide.headless=true
 ```
+
 Запуск c выводом логов:
+
 ```bash
 ./gradlew test --info
 ```
+
 ## CI
 
 [![Java CI with Gradle](https://github.com/Gordon-AG/card-delivery-selenide-replan/actions/workflows/gradle.yml/badge.svg)](https://github.com/Gordon-AG/card-delivery-selenide-replan/actions/workflows/gradle.yml)

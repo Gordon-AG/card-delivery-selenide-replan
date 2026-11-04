@@ -43,6 +43,7 @@ class CardDeliveryTest {
                 .shouldBe(visible, Duration.ofSeconds(15));
         $("[data-test-id='success-notification'] .notification__title")
                 .shouldHave(exactText("Успешно!"));
+        // дополнена проверка
         $("[data-test-id='success-notification'] .notification__content")
                 .shouldHave(Condition.text("Встреча успешно запланирована на " + info.getDate()));
 
@@ -63,7 +64,7 @@ class CardDeliveryTest {
                 .shouldHave(exactText("Перепланировать"))
                 .click();
 
-        // success-notification обновился новым полным сообщением с новой датой
+        // success-notification дополнен новым полным сообщением с новой датой
         $("[data-test-id='success-notification'] .notification__content")
                 .shouldHave(Condition.text("Встреча успешно запланирована на " + newDate), Duration.ofSeconds(15));
     }
